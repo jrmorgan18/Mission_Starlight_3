@@ -156,33 +156,55 @@ export class HyperspaceScene {
       this.input.x = dx;
       this.input.y = -dy;
     };
-    let joyId = null;
-    this.joy.addEventListener('pointerdown', (e) => {
-      joyId = e.pointerId;
-      this.joy.setPointerCapture(joyId);
-    });
-    this.joy.addEventListener('pointermove', (e) => {
-      if (e.pointerId !== joyId) return;
+    const steerFrom = (e) => {
       const r = this.joy.getBoundingClientRect();
       let dx = (e.clientX - (r.left + r.width / 2)) / (r.width / 2);
       let dy = (e.clientY - (r.top + r.height / 2)) / (r.height / 2);
       const len = Math.hypot(dx, dy) || 1;
       if (len > 1) { dx /= len; dy /= len; }
       setStick(dx, dy);
-    });
+    };
+
+    // iPad Safari delivers touch pointermove reliably only when we preventDefault
+    // and track the drag on window — setPointerCapture alone is flaky there.
+    let joyId = null;
+    const joyMove = (e) => { if (e.pointerId === joyId) { e.preventDefault(); steerFrom(e); } };
     const joyEnd = (e) => { if (e.pointerId === joyId) { joyId = null; setStick(0, 0); } };
-    this.joy.addEventListener('pointerup', joyEnd);
-    this.joy.addEventListener('pointercancel', joyEnd);
+    this.joy.addEventListener('pointerdown', (e) => {
+      e.preventDefault();
+      joyId = e.pointerId;
+      steerFrom(e);              // a press alone already steers, even without a drag
+    }, { passive: false });
+    window.addEventListener('pointermove', joyMove, { passive: false });
+    window.addEventListener('pointerup', joyEnd);
+    window.addEventListener('pointercancel', joyEnd);
 
     this.thrustBtn = document.createElement('button');
     this.thrustBtn.id = 'thrust-btn';
     this.thrustBtn.textContent = 'LIGHTSPEED ⚡';
-    this.thrustBtn.addEventListener('pointerdown', () => { this.input.thrust = true; this.thrustBtn.classList.add('held'); sfx.thrust(); });
-    const thrustEnd = () => { this.input.thrust = false; this.thrustBtn.classList.remove('held'); };
-    this.thrustBtn.addEventListener('pointerup', thrustEnd);
-    this.thrustBtn.addEventListener('pointercancel', thrustEnd);
-    this.thrustBtn.addEventListener('pointerleave', thrustEnd);
+    let thrustId = null;
+    const thrustStart = (e) => {
+      e.preventDefault();
+      thrustId = e.pointerId;
+      this.input.thrust = true;
+      this.thrustBtn.classList.add('held');
+      sfx.thrust();
+    };
+    // End on pointer-UP, never pointerleave: the .held scale transform shrinks the
+    // button under the finger and would fire leave instantly on iPad, cutting boost.
+    const thrustEnd = (e) => {
+      if (thrustId !== null && e.pointerId !== thrustId) return;
+      thrustId = null;
+      this.input.thrust = false;
+      this.thrustBtn.classList.remove('held');
+    };
+    this.thrustBtn.addEventListener('pointerdown', thrustStart, { passive: false });
+    window.addEventListener('pointerup', thrustEnd);
+    window.addEventListener('pointercancel', thrustEnd);
     uiRoot.appendChild(this.thrustBtn);
+
+    // window-level handlers to detach when we leave hyperspace
+    this._winCtl = [['pointermove', joyMove], ['pointerup', joyEnd], ['pointercancel', joyEnd], ['pointerup', thrustEnd], ['pointercancel', thrustEnd]];
   }
 
   removeControls() {
@@ -191,6 +213,7 @@ export class HyperspaceScene {
     this.flash?.remove();
     removeEventListener('keydown', this.onKey);
     removeEventListener('keyup', this.onKey);
+    if (this._winCtl) { for (const [type, fn] of this._winCtl) window.removeEventListener(type, fn); this._winCtl = null; }
   }
 
   /* ----- spawners ----- */
