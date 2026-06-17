@@ -68,9 +68,10 @@ function tunnelMaterial() {
 }
 
 export class HyperspaceScene {
-  constructor(game, destName) {
+  constructor(game, destName, { peril = false } = {}) {
     this.game = game;
     this.destName = destName;
+    this.peril = peril;          // "race the beam" mode: red danger vignette + urgent objective
     this.scene = new THREE.Scene();
 
     this.camera = new THREE.PerspectiveCamera(70, innerWidth / innerHeight, 0.1, 2000);
@@ -138,6 +139,12 @@ export class HyperspaceScene {
     requestAnimationFrame(() => this.flash.classList.add('on'));
     setTimeout(() => this.flash.classList.remove('on'), 500);
     sfx.whoosh();
+
+    if (this.peril) {
+      this.vignette = document.createElement('div');
+      this.vignette.className = 'peril-vignette';
+      document.getElementById('ui').appendChild(this.vignette);
+    }
   }
 
   /* ----- touch controls (same feel as game 1) ----- */
@@ -211,6 +218,7 @@ export class HyperspaceScene {
     this.joy?.remove();
     this.thrustBtn?.remove();
     this.flash?.remove();
+    this.vignette?.remove();
     removeEventListener('keydown', this.onKey);
     removeEventListener('keyup', this.onKey);
     if (this._winCtl) { for (const [type, fn] of this._winCtl) window.removeEventListener(type, fn); this._winCtl = null; }
@@ -293,7 +301,9 @@ export class HyperspaceScene {
       const rate = new URLSearchParams(location.search).has('fast') ? 0.15 : 0.016;
       this.progress += dt * rate * this.speed;
       this.ship.userData.engineGlow.scale.setScalar(0.9 + this.speed * 0.35 + Math.sin(t * 24) * 0.08);
-      ui.setObjective(`🌀 Ride the light-river to ${this.destName}! ${Math.min(99, Math.round(this.progress * 100))}%`);
+      ui.setObjective(this.peril
+        ? `⚠️ OUTRUN THE BURST — reach ${this.destName}! ${Math.min(99, Math.round(this.progress * 100))}%`
+        : `🌀 Ride the light-river to ${this.destName}! ${Math.min(99, Math.round(this.progress * 100))}%`);
     }
 
     const travel = 70 * this.speed * dt;

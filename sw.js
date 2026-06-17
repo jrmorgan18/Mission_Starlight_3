@@ -1,5 +1,5 @@
 /* Mission: Starlight 3 service worker — cache-first so the game works offline after first play. */
-const CACHE = 'starlight3-v2';
+const CACHE = 'starlight3-v3';
 const CORE = [
   '.',
   'index.html',

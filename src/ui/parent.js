@@ -2,7 +2,7 @@
 // progress dashboard, real-world prize configuration, and game settings.
 import { loadSave, save, resetSave, oopsLimit, setOopsLimit, OOPS_LIMIT_RANGE } from '../save.js';
 import { skillReport } from '../edu/engine.js';
-import { BADGES } from '../content.js';
+import { BADGES, CARDS, CLUES } from '../content.js';
 import { setMusicOn } from '../audio.js';
 import { SAGA_GAMES, sagaStatus, setSagaReward } from '../saga.js';
 import { refreshHUD } from './ui.js';
@@ -65,9 +65,9 @@ function buildZone(game, onReset) {
   /* ---- overview ---- */
   const overview = el('div', 'pz-section');
   overview.appendChild(el('h3', '', '📊 OVERVIEW'));
-  const chapterNames = ['Return to Planet Nine', 'Proxima Centauri b', 'TRAPPIST-1', 'The Diamond Planet', 'The Pulsar Lighthouse', 'Sagittarius A*', 'The Long Way Home', 'Story complete! 🎉'];
-  overview.appendChild(el('div', 'skill-row', `Story progress: ${chapterNames[Math.min(s.chapter, 7)]} (chapter ${Math.min(s.chapter + 1, 7)} of 7)`));
-  overview.appendChild(el('div', 'skill-row', `🗼 Beacons: ${s.beacons}/7 · 🌀 Jumps: ${s.jumps} · ⭐ Photons: ${s.starBits} · 👽 Crew cards: ${s.cards.length}/9 · 🕵️ Clues: ${s.clues.length}/7`));
+  const chapterNames = ['Arrival at Veyra', 'The Sky-Watchers', 'The Pinwheel', 'The Great Evacuation', 'Race the Beam', 'Safe Harbor', 'Story complete! 🎉'];
+  overview.appendChild(el('div', 'skill-row', `Story progress: ${chapterNames[Math.min(s.chapter, 6)]} (chapter ${Math.min(s.chapter + 1, 6)} of 6)`));
+  overview.appendChild(el('div', 'skill-row', `🛡️ Shields: ${s.beacons}/3 · 🌀 Jumps: ${s.jumps} · ⭐ Photons: ${s.starBits} · 👽 Crew cards: ${s.cards.length}/${CARDS.length} · 🕵️ Clues: ${s.clues.length}/${Object.keys(CLUES).length}`));
   body.appendChild(overview);
 
   /* ---- skills dashboard ---- */

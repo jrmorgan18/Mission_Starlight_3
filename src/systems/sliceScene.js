@@ -32,8 +32,9 @@ function tween(ms, onUpdate) {
 }
 
 export class KillerStarScene {
-  constructor(game) {
+  constructor(game, { showFps = true } = {}) {
     this.game = game;
+    this.showFps = showFps;
     this.scene = new THREE.Scene();
     this.scene.background = new THREE.Color(0x05030c);
     this.scene.fog = new THREE.Fog(0x05030c, 60, 220);
@@ -66,10 +67,12 @@ export class KillerStarScene {
     this.shake = 0;
     this.t0 = 0;
 
-    // live FPS read-out for the benchmark
-    this.fpsEl = document.createElement('div');
-    this.fpsEl.id = 'slice-fps';
-    document.getElementById('ui').appendChild(this.fpsEl);
+    // live FPS read-out for the benchmark (slice only)
+    if (this.showFps) {
+      this.fpsEl = document.createElement('div');
+      this.fpsEl.id = 'slice-fps';
+      document.getElementById('ui').appendChild(this.fpsEl);
+    }
     this._frames = 0;
     this._fpsClock = 0;
     this._fpsSamples = [];
@@ -99,8 +102,7 @@ export class KillerStarScene {
       if (this._fpsSamples.length > 8) this._fpsSamples.shift();
       const avg = this._fpsSamples.reduce((a, b) => a + b, 0) / this._fpsSamples.length;
       window.__sliceFPS = Math.round(avg);
-      const q = this.game.pipeline.quality;
-      this.fpsEl.textContent = `${Math.round(fps)} fps · ${q}`;
+      if (this.fpsEl) this.fpsEl.textContent = `${Math.round(fps)} fps · ${this.game.pipeline.quality}`;
       this._frames = 0;
       this._fpsClock = 0;
     }
@@ -118,7 +120,7 @@ export class KillerStarScene {
 }
 
 /* ---------- the deflector mini-game: hold to charge the shield ---------- */
-function deflectorMinigame() {
+export function deflectorMinigame() {
   return new Promise((resolve) => {
     const root = document.getElementById('ui');
     const wrap = document.createElement('div');
@@ -159,6 +161,30 @@ function deflectorMinigame() {
   });
 }
 
+/** The charge -> deflector -> gamma-ray-burst climax. Shared by the slice and
+ *  the story chapter. The star spins up, the kid holds the shield, then the
+ *  burst fires and the deflector splits it. Resolves when the flash subsides. */
+export async function pinwheelClimax(scene) {
+  ui.setObjective('🛡️ Charge the deflector before the star fires!');
+  const charging = tween(5200, (k) => scene.star.userData.setCharge(k));
+  await deflectorMinigame();
+  await charging;                         // make sure the star is fully lit before it blows
+  scene.star.userData.setCharge(1);
+
+  // FIRE: the gamma-ray burst shoots out, the deflector splits it
+  ui.setObjective('');
+  sfx.whoosh?.();
+  const flash = document.createElement('div');
+  flash.className = 'slice-flash';
+  document.getElementById('ui').appendChild(flash);
+  requestAnimationFrame(() => flash.classList.add('on'));
+  scene.shake = 1.2;
+  await tween(650, (k) => scene.star.userData.setFire(k));
+  sfx.land?.();
+  setTimeout(() => { flash.classList.remove('on'); setTimeout(() => flash.remove(), 600); }, 250);
+  await tween(900, (k) => scene.star.userData.setFire(1 - k * 0.7));
+}
+
 /** Run the whole vertical slice. Resolves when the player finishes it. */
 export async function runKillerStarSlice(game) {
   const s = loadSave();
@@ -185,25 +211,7 @@ export async function runKillerStarSlice(game) {
     { who: 'bolt', text: 'The core is destabilising — it\'s charging up! HOLD the deflector to shield Veyra. GO GO GO!' }
   ]);
 
-  // charge the star while the kid charges the shield
-  ui.setObjective('🛡️ Charge the deflector before the star fires!');
-  const charging = tween(5200, (k) => scene.star.userData.setCharge(k));
-  await deflectorMinigame();
-  await charging;                         // make sure the star is fully lit before it blows
-  scene.star.userData.setCharge(1);
-
-  // FIRE: the gamma-ray burst shoots out, the deflector splits it
-  ui.setObjective('');
-  sfx.whoosh?.();
-  const flash = document.createElement('div');
-  flash.className = 'slice-flash';
-  document.getElementById('ui').appendChild(flash);
-  requestAnimationFrame(() => flash.classList.add('on'));
-  scene.shake = 1.2;
-  await tween(650, (k) => scene.star.userData.setFire(k));
-  sfx.land?.();
-  setTimeout(() => flash.classList.remove('on'), 250);
-  await tween(900, (k) => scene.star.userData.setFire(1 - k * 0.7));
+  await pinwheelClimax(scene);
 
   await ui.dialogue([
     { who: 'solari', text: 'The beam... it split around your shield! Our world is safe. Thank you, Cadet — you are a star yourself.' },

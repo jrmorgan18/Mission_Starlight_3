@@ -34,6 +34,16 @@ export const SCIENCE_BANK = [
     'A supernova is a giant star explosion — for a few days it can shine brighter than a whole galaxy of normal stars!'),
   sq('ks-safe', 'killerstar', 'How can explorers stay safe from a killer star\'s blast?', 'Shield against it or stay out of the beam', ['Paint the ship red', 'Fly closer to see better', 'Turn off the radio'],
     'Distance, shielding, and staying out of the beam keep you safe. Smart cadets read the danger before they get close!'),
+  sq('ks-spin', 'killerstar', 'Why does a spinning dying star fire a narrow BEAM instead of blasting everywhere?', 'Its fast spin focuses the energy out its poles', ['It is shy', 'Beams are prettier', 'The wind blows it sideways'],
+    'A fast-spinning dying star funnels its energy out its top and bottom, like water out of a spinning hose — a tight beam, not a splash.'),
+  sq('ks-betelgeuse', 'killerstar', 'Betelgeuse is a giant red star that might explode someday. What will that be?', 'A supernova', ['A sunrise', 'A new moon', 'A rainbow'],
+    'Betelgeuse is a real red supergiant near the end of its life. When it goes, it will be a brilliant supernova — safe to watch from far-away Earth!'),
+  sq('ks-light-time', 'killerstar', 'A killer star\'s beam is made of light. Does light travel instantly?', 'No — it is fast, but it still takes time', ['Yes, it is everywhere at once', 'No, light never moves', 'Only on weekends'],
+    'Light is the fastest thing there is, but space is so huge that even light takes years to cross it. That travel TIME is what lets you escape!'),
+  sq('ks-newstars', 'killerstar', 'When a giant star dies and explodes, what can happen next?', 'Its dust helps build new stars and planets', ['Everything stays empty forever', 'It turns into a black hole only', 'Nothing ever again'],
+    'Star deaths scatter rich dust that gathers into NEW stars and worlds. Even the atoms in you came from a star that died long ago!'),
+  sq('ks-distance', 'killerstar', 'Two killer stars are dying. Which is more dangerous to a planet?', 'The one whose beam points at the planet', ['The prettier one', 'The one farther away always', 'The quieter one'],
+    'A gamma-ray burst only harms what it is aimed at. A close star pointed away is safer than a far one pointed right at you — aim matters most!'),
 
   // --- Light & distance ---
   sq('light-fastest', 'lightspeed', 'What is the FASTEST thing in the whole universe?', 'Light', ['A rocket', 'A comet', 'Sound'],

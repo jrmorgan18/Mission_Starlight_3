@@ -4,8 +4,8 @@ import { loadSave, save, resetSave, loadGame1Save } from './save.js';
 import { CHAPTERS, BADGES } from './content.js';
 import { CHAPTER_SCRIPTS } from './systems/chapters.js';
 import { HyperspaceScene } from './hyperspace/hyperspace.js';
-import { makeStarfield, makePlanet, makeGate, makeNebulaCloud } from './world/builders.js';
-import { makeBlackHole } from './blackhole/blackhole.js';
+import { makeStarfield, makePlanet, makeNebulaCloud, makeGlowSprite } from './world/builders.js';
+import { makeKillerStar } from './killerstar/killerstar.js';
 import { runKillerStarSlice } from './systems/sliceScene.js';
 import { Pipeline } from './fx/post.js';
 import * as ui from './ui/ui.js';
@@ -14,8 +14,8 @@ import { openParentZone } from './ui/parent.js';
 import { sfx } from './audio.js';
 import { collectSagaPiece } from './saga.js';
 
-// jump-calculation skill per destination chapter (index 1-6; chapter 0 needs no jump)
-const JUMP_SKILLS = [null, 'addition', 'patterns', 'multiplication', 'subtraction', 'wordprob', 'comparison'];
+// jump-calculation skill per destination chapter (only 'jump'-arrival chapters use it)
+const JUMP_SKILLS = [null, 'addition', 'subtraction', 'multiplication', null, null];
 
 class TitleBackdrop {
   constructor(game) {
@@ -28,24 +28,18 @@ class TitleBackdrop {
     sun.position.set(30, 20, 10);
     this.scene.add(sun);
 
-    // the sequel's poster shot: Sgr A* looming, the gate glinting, worlds drifting
-    this.hole = makeBlackHole(34);
-    this.hole.position.set(14, 6, -60);
-    this.scene.add(this.hole);
+    // the poster shot: the Pinwheel killer star looming over ocean-world Veyra
+    this.star = makeKillerStar(30);
+    this.star.position.set(16, 7, -64);
+    this.star.userData.setCharge(0.25);
+    this.scene.add(this.star);
 
-    this.gate = makeGate(4);
-    this.gate.position.set(-16, -3, -34);
-    this.gate.rotation.y = 0.7;
-    this.gate.userData.glyphs.forEach((g) => (g.material.emissiveIntensity = 2));
-    this.gate.userData.film.material.opacity = 0.25;
-    this.scene.add(this.gate);
-
-    const cloud = makeNebulaCloud(0x6a4a9e, 10, 50);
-    cloud.position.set(0, 8, -80);
+    const cloud = makeNebulaCloud(0x4a7ab0, 10, 50);
+    cloud.position.set(0, 8, -82);
     this.scene.add(cloud);
 
     this.planets = [];
-    const layout = [['planet9', 2.6, -7, 6, -44], ['trappist', 1.8, 20, -6, -38], ['cancri', 1.4, 6, -8, -30]];
+    const layout = [['veyra', 3.0, -12, 2, -46], ['harbor', 1.7, 18, -7, -40]];
     for (const [key, r, x, y, z] of layout) {
       const p = makePlanet(key, r);
       p.position.set(x, y, z);
@@ -55,9 +49,8 @@ class TitleBackdrop {
   }
   update(dt, t) {
     for (const p of this.planets) p.rotation.y += dt * 0.12;
-    this.gate.rotation.z = t * 0.1;
-    this.hole.userData.update(dt, t);
-    this.hole.userData.face(this.camera);
+    this.star.userData.update(dt, t);
+    this.star.userData.face(this.camera);
     this.camera.position.x = Math.sin(t * 0.08) * 4;
     this.camera.lookAt(0, 0, -30);
   }
@@ -122,7 +115,7 @@ export class Game {
         ui.rewardBurst(badge.icon, `Badge earned: ${badge.name}!`,
           prize ? `Show a grown-up — this badge is worth a real prize: "${prize.reward}" 🎁` : 'You\'re becoming a legend of the spaceways!');
       }
-      if (badge.id === 'finish' && earned) collectSagaPiece('game2');
+      if (badge.id === 'finish' && earned) collectSagaPiece('game3');
     }
   }
 
@@ -137,10 +130,10 @@ export class Game {
   async jump(chapterIdx, destName) {
     if (ui.isFaded()) await this.toBackdrop();
     await ui.dialogue([
-      { who: 'luma', text: `Gate locked on ${destName}! The light-river is humming...` },
-      { who: 'bolt', text: 'But a jump needs JUMP CALCULATIONS — true numbers to open the way. Ready, Cadet?' }
+      { who: 'luma', text: `Course locked on ${destName}! The light-river is humming...` },
+      { who: 'bolt', text: 'But a jump needs JUMP CALCULATIONS — true numbers to plot the way. Ready, Cadet?' }
     ]);
-    const skill = JUMP_SKILLS[Math.min(chapterIdx, 6)] || 'addition';
+    const skill = JUMP_SKILLS[chapterIdx] || 'addition';
     for (let i = 0; i < 2; i++) {
       await ui.askQuestion(pickMath(skill), {
         contextLabel: `JUMP CALCULATION ${i + 1} OF 2`,
@@ -172,14 +165,15 @@ export class Game {
     }
 
     this.checkBadges();   // backfills saga progress for already-finished saves
+    if (!s.cards.includes('bolt')) { s.cards.push('bolt'); save(); }   // Bolt is always aboard
     await this.toBackdrop();
 
-    // same github.io origin: greet the hero of game 1 by name
+    // same github.io origin: greet the returning hero of game 2 by name
     const g1 = loadGame1Save();
     let greeting = null;
     if (g1?.name && !s.name) {
       greeting = g1.chapter >= 7
-        ? `🏅 Welcome back, Cadet ${g1.name} — Hero of Luma!`
+        ? `🏅 Welcome back, Cadet ${g1.name} — Hero of the Heart!`
         : `👋 Good to see you again, Cadet ${g1.name}!`;
     }
 
@@ -193,7 +187,7 @@ export class Game {
       const name = await ui.nameEntry(g1?.name || '');
       s.name = name;
       if (g1?.chapter >= 7 && g1?.name?.toLowerCase() === name.toLowerCase()) {
-        s.game1Hero = true;   // unlocks the Hero of Luma badge
+        s.game1Hero = true;   // unlocks the Hero of the Heart badge (finished game 2)
       }
       save();
       this.checkBadges();
@@ -203,10 +197,11 @@ export class Game {
       s.seenIntro = true;
       save();
       await ui.dialogue([
-        { who: 'bolt', text: `Cadet ${s.name}, reporting for duty again! Bolt here — now with a brand-new FACT-CHECKER chip. Beep!` },
-        { who: 'bolt', text: 'It\'s been a year since we brought Luma home. But three nights ago, every radio on Earth caught the same whisper from deep space...' },
-        { who: 'signal', text: 'beep... beep-beep... beeeeep...' },
-        { who: 'bolt', text: 'It repeats. It\'s getting fainter. And here\'s the strange part: it\'s coming from the direction of... PLANET NINE. Buckle up, Cadet. We\'re going back.' }
+        { who: 'bolt', text: `Cadet ${s.name}, reporting for duty! Bolt here, fact-checker chip warmed up. Beep!` },
+        { who: 'luma', text: 'And me! I\'m flying as your navigator now. Bolt, play them the message we caught...' },
+        { who: 'signal', text: '...please... our star is dying... please, help us...' },
+        { who: 'bolt', text: 'A whole civilization is calling — the Solari, on an ocean world far across the galaxy. A giant star near them is about to die... and it might take their world with it.', stamp: 'real' },
+        { who: 'bolt', text: 'There\'s no time to lose. Plot the jump, Cadet. We\'re going to save them.' }
       ]);
     }
 
@@ -217,8 +212,10 @@ export class Game {
       if (ui.isFaded()) await this.toBackdrop();
       try {
         await ui.chapterCard(i + 1, ch.name, ch.sub);
-        if (i === 0) {
-          await ui.fade(true);      // the long rocket ride out — montage style
+        if (ch.arrival === 'self') {
+          /* the chapter flies itself (the "race the beam" escape) */
+        } else if (ch.arrival === 'fade') {
+          await ui.fade(true);      // a quiet montage-style arrival
         } else {
           await this.jump(i, ch.name);
         }
@@ -260,9 +257,11 @@ export class Game {
       await this.toBackdrop();
       const pick = await this.replayMenu();
       try {
-        await ui.chapterCard(pick + 1, CHAPTERS[pick].name, CHAPTERS[pick].sub);
-        if (pick === 0) await ui.fade(true);
-        else await this.jump(pick, CHAPTERS[pick].name);
+        const ch = CHAPTERS[pick];
+        await ui.chapterCard(pick + 1, ch.name, ch.sub);
+        if (ch.arrival === 'self') { /* chapter flies itself */ }
+        else if (ch.arrival === 'fade') await ui.fade(true);
+        else await this.jump(pick, ch.name);
         await CHAPTER_SCRIPTS[pick](this);
       } catch (e) {
         if (!(e instanceof ui.DemotionSignal)) throw e;   // in free-play, just bow back out to the menu

@@ -1,43 +1,43 @@
-// Story content shared across the sequel: chapter list, mystery clues,
-// collectible crew cards, and milestone badges.
+// Story content for Mission: Starlight 3 — "Race the Dying Star".
+// Based on the "Stars That Kill" episode: rescue the Solari of ocean-world
+// Veyra from the Pinwheel, a Wolf-Rayet star about to fire a gamma-ray burst.
+// Sets up game 4 (relocate the survivors to Mars) and woven hints that the
+// same danger could one day point at Earth (game 5).
 
 export const CHAPTERS = [
-  { id: 0, key: 'planet9',  name: 'Return to Planet Nine',  sub: 'The signal in the dark',       world: 'planet9' },
-  { id: 1, key: 'proxima',  name: 'Proxima Centauri b',     sub: 'Storms of the little red sun', world: 'proxima' },
-  { id: 2, key: 'trappist', name: 'TRAPPIST-1',             sub: 'The festival of seven worlds', world: 'trappist' },
-  { id: 3, key: 'cancri',   name: 'The Diamond Planet',     sub: 'Oceans of lava, hearts of diamond', world: 'cancri' },
-  { id: 4, key: 'pulsar',   name: 'The Pulsar Lighthouse',  sub: 'Blink by blink across the galaxy', world: 'pulsar' },
-  { id: 5, key: 'blackhole', name: 'Sagittarius A*',        sub: 'The Great Anchor',             world: 'blackhole' },
-  { id: 6, key: 'finale',   name: 'The Long Way Home',      sub: 'Lighting the way back',        world: 'finale' }
+  { id: 0, key: 'veyra',       name: 'Arrival at Veyra',     sub: 'A world under two suns',          world: 'veyra',       arrival: 'fade' },
+  { id: 1, key: 'observatory', name: 'The Sky-Watchers',     sub: "Reading a star's fate",           world: 'observatory', arrival: 'jump' },
+  { id: 2, key: 'pinwheel',    name: 'The Pinwheel',         sub: 'Face to face with a killer star', world: 'pinwheel',    arrival: 'jump' },
+  { id: 3, key: 'spaceport',   name: 'The Great Evacuation', sub: 'Every family aboard',             world: 'spaceport',   arrival: 'jump' },
+  { id: 4, key: 'race',        name: 'Race the Beam',        sub: 'Outrun the dying light',          world: 'race',        arrival: 'self' },
+  { id: 5, key: 'harbor',      name: 'Safe Harbor',          sub: 'A new dawn — and a far warning',  world: 'harbor',      arrival: 'fade' }
 ];
 
 export const CLUES = {
-  c1: { id: 'c1', icon: '📡', title: 'The Strange Signal', text: 'A repeating signal is reaching our solar system — and it\'s coming THROUGH Planet Nine, like the planet is a relay tower.' },
-  c2: { id: 'c2', icon: '🌀', title: 'The Star Gate', text: 'Planet Nine guards an ancient gate built by the Lightwrights. It opens "light-rivers" between the stars. (Bolt stamps this one STORY MAGIC — real scientists haven\'t found faster-than-light travel!)' },
-  c3: { id: 'c3', icon: '🔴', title: 'Ember\'s Echo', text: 'Storm-watcher Ember heard the signal too: it repeats every 7 blinks. Seven... like a code passed between seven of something.' },
-  c4: { id: 'c4', icon: '🏮', title: 'The Lantern Chain', text: 'The TRAPPIST worlds relay light-signals in order, like a bucket brigade. The mystery signal travels the same way — lighthouse to lighthouse!' },
-  c5: { id: 'c5', icon: '💎', title: 'The Warm Voice', text: 'Smelt\'s deep crystals hummed when the signal passed. Only an old star\'s voice makes crystals hum. Someone ANCIENT is calling.' },
-  c6: { id: 'c6', icon: '🗼', title: 'The Keeper\'s Message', text: 'Lighthouse Seven decoded it: "CAUGHT IN THE GIANT\'S SPIRAL. SLOWING. PLEASE TELL MY FAMILY." It came from the center of the galaxy — where the supermassive black hole lives.' },
-  c7: { id: 'c7', icon: '🌟', title: 'Mystery Solved', text: 'The voice is Nana Lyra — an elder star from Luma\'s own nursery, circling too close to Sagittarius A*. A gravity slingshot at just the right moment swung her free!' }
+  ks1: { id: 'ks1', icon: '🌟', title: 'A World Under Two Suns', text: 'Veyra has a gentle little sun of its own — but a second, dazzling star hangs in its sky: the Pinwheel. Bolt says it is a Wolf-Rayet star, the biggest and hottest kind, near the end of its life. (Bolt stamps this REAL SCIENCE.)' },
+  ks2: { id: 'ks2', icon: '🌀', title: 'The Spinning Star', text: 'The sky-watchers showed us the Pinwheel is spinning fast and flinging out spiral dust. When a star like this dies, its spin can fire a GAMMA-RAY BURST — a narrow beam of killing light. (REAL SCIENCE.)' },
+  ks3: { id: 'ks3', icon: '🧭', title: 'Where the Beam Points', text: 'Up close, Bolt charted the beam\'s aim. It does NOT point at Veyra — it points past it, off toward a tiny faraway blue world. Strange... Bolt quietly logged the coordinates "for later."' },
+  ks4: { id: 'ks4', icon: '🚀', title: 'The Ark Plan', text: 'You cannot move a whole world in time. The plan instead: build ark-ships and lift every Solari family to safety before the Pinwheel dies.' },
+  ks5: { id: 'ks5', icon: '⚡', title: 'The Burst', text: 'The Pinwheel died — and fired its beam exactly where Bolt predicted. The deflector split it around the fleet and everyone made it out. A dying star is fierce, but even its light still takes TIME to travel.' },
+  ks6: { id: 'ks6', icon: '🔵', title: 'A Message for Home', text: 'The beam runs on across the galaxy toward that small blue world — our own Earth, far in the future. Someday someone will have to send a warning home. For now the Solari are safe, setting course for a little red planet to begin again.' }
 };
 
 export const CARDS = [
-  { id: 'bolt',   face: '🤖', name: 'Bolt',           desc: 'Your loyal robot co-pilot. Now stamps facts REAL or STORY MAGIC.' },
-  { id: 'luma',   face: '🌟', name: 'Luma',           desc: 'Not a baby anymore! Your ship\'s glowing navigator-heart.' },
-  { id: 'ember',  face: '🔴', name: 'Ember',          desc: 'Storm-watcher of Proxima b. Counts sun freckles before flares.' },
-  { id: 'septet', face: '🏮', name: 'The Septet',     desc: 'Seven lantern-keepers of TRAPPIST-1, one per world.' },
-  { id: 'smelt',  face: '⛏️', name: 'Smelt',          desc: 'Chief miner of the Diamond Planet. Counts everything twice.' },
-  { id: 'tick',   face: '🗼', name: 'Tick',           desc: 'Keeper of Pulsar Lighthouse Seven. Never misses a blink.' },
-  { id: 'lyra',   face: '✨', name: 'Nana Lyra',      desc: 'Elder star and galaxy mapper. Sang with pulsars, surfed comet tails.' },
-  { id: 'sgra',   face: '⚫', name: 'Sagittarius A*', desc: 'The supermassive black hole at our galaxy\'s heart. 4 million Suns heavy!' },
-  { id: 'gate',   face: '🌀', name: 'The Star Gate',  desc: 'An ancient Lightwright ring hiding beside Planet Nine.' }
+  { id: 'bolt',     face: '🤖', name: 'Bolt',          desc: 'Your robot co-pilot and fact-checker. Stamps every fact REAL or STORY MAGIC.' },
+  { id: 'luma',     face: '🌟', name: 'Luma',          desc: 'The little star you once carried home — now your ship\'s glowing navigator.' },
+  { id: 'sola',     face: '👽', name: 'Elder Sola',    desc: 'Wise leader of the Solari. She has watched the Pinwheel her whole long life.' },
+  { id: 'pip',      face: '🐚', name: 'Pip',           desc: 'A curious young Solari who shows you around Veyra\'s coral cities.' },
+  { id: 'astra',    face: '🔭', name: 'Astra',         desc: 'Keeper of the sky-watch tower. She reads the future in starlight.' },
+  { id: 'vega',     face: '🚀', name: 'Captain Vega',  desc: 'Commander of the Solari ark-fleet. She never leaves anyone behind.' },
+  { id: 'pinwheel', face: '🌀', name: 'The Pinwheel',  desc: 'A Wolf-Rayet star spinning toward its death — beautiful, and deadly.' },
+  { id: 'veyra',    face: '🌊', name: 'Veyra',         desc: 'An ocean world of coral cities, home of the gentle Solari.' }
 ];
 
 export const BADGES = [
-  { id: 'jump3',     icon: '🌀', name: 'River Rider',     test: (s) => s.jumps >= 3 },
-  { id: 'beacons4',  icon: '🗼', name: 'Beacon Lighter',  test: (s) => s.beacons >= 4 },
-  { id: 'journal10', icon: '📔', name: 'Star Scholar',    test: (s) => (s.factsLearned.length + s.journal.length) >= 10 },
-  { id: 'blackhole', icon: '⚫', name: 'Heart of the Galaxy', test: (s) => s.clues.includes('c6') },
-  { id: 'finish',    icon: '🌟', name: 'Galaxy Hero',     test: (s) => s.chapter >= 7 },
-  { id: 'hero1',     icon: '🏅', name: 'Hero of Luma',    test: (s) => !!s.game1Hero }
+  { id: 'jump3',     icon: '🌀', name: 'River Rider',       test: (s) => s.jumps >= 3 },
+  { id: 'beacons3',  icon: '🛡️', name: 'Shield Bearer',     test: (s) => s.beacons >= 3 },
+  { id: 'journal10', icon: '📔', name: 'Star Scholar',      test: (s) => (s.factsLearned.length + s.journal.length) >= 10 },
+  { id: 'pinwheel',  icon: '⚡', name: 'Star Tamer',        test: (s) => s.clues.includes('ks5') },
+  { id: 'finish',    icon: '🌟', name: 'Star Rescuer',      test: (s) => s.chapter >= 6 },
+  { id: 'hero2',     icon: '🏅', name: 'Hero of the Heart', test: (s) => !!s.game1Hero }
 ];

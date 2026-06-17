@@ -20,7 +20,11 @@ export const SPEAKERS = {
   tick:   { name: 'Tick', face: '🗼' },
   lyra:   { name: 'Nana Lyra', face: '✨' },
   gate:   { name: 'The Star Gate', face: '🌀' },
-  solari: { name: 'Solari Elder', face: '👽' },
+  solari: { name: 'Solari', face: '👽' },
+  sola:   { name: 'Elder Sola', face: '👽' },
+  pip:    { name: 'Pip', face: '🐚' },
+  astra:  { name: 'Astra', face: '🔭' },
+  vega:   { name: 'Captain Vega', face: '🚀' },
   glyphs: { name: 'Ancient Glyphs', face: '📜' },
   radio:  { name: 'Ship Radio', face: '📻' },
   signal: { name: 'The Signal', face: '📡' }
@@ -51,7 +55,7 @@ export function buildHUD(game) {
 
   const left = el('div', 'hud-group');
   const beacons = el('div', 'hud-pill');
-  beacons.append('🗼', el('span', '', '0'));
+  beacons.append('🛡️', el('span', '', '0'));
   const bits = el('div', 'hud-pill');
   bits.append('⭐', el('span', '', '0'));
   // "Oops meter": this many wrong answers anywhere in the game bounce the player back one planet.
@@ -453,7 +457,7 @@ export function showJournal(tab = 'tricky', highlightConcept = null) {
         card.appendChild(el('div', 'j-why', c.text));
         body.appendChild(card);
       }
-      const remaining = 7 - collected.length;
+      const remaining = Object.keys(CLUES).length - collected.length;
       if (remaining > 0) body.appendChild(el('div', 'j-empty', `${remaining} more clue${remaining > 1 ? 's' : ''} out there...`));
     }
   };
@@ -508,8 +512,8 @@ export function titleScreen(hasSave, greeting = null) {
     const screen = el('div', 'screen');
     screen.style.justifyContent = 'center';
     const logo = el('div', 'title-logo');
-    logo.append('MISSION:', document.createElement('br'), 'STARLIGHT 2');
-    const sub = el('div', 'title-sub', 'The Heart of the Galaxy');
+    logo.append('MISSION:', document.createElement('br'), 'STARLIGHT 3');
+    const sub = el('div', 'title-sub', 'Race the Dying Star');
     const play = el('button', 'big-btn', hasSave ? '▶ CONTINUE' : '▶ START MISSION');
     play.onclick = () => { sfx.fanfare(); screen.remove(); resolve('play'); };
     screen.append(logo, sub);
@@ -520,7 +524,7 @@ export function titleScreen(hasSave, greeting = null) {
       fresh.onclick = () => { sfx.tap(); screen.remove(); resolve('new'); };
       screen.append(fresh);
     }
-    screen.appendChild(el('div', 'small-note', 'Beyond the solar system, a voice is calling'));
+    screen.appendChild(el('div', 'small-note', 'Across the galaxy, a dying star — and a world to save'));
     root().appendChild(screen);
   });
 }
@@ -579,7 +583,7 @@ export function giveBeacon(placeName) {
   save();
   refreshHUD();
   sfx.shard();
-  return rewardBurst('🗼', `Beacon ${s.beacons} of 7 is lit!`, `The lighthouse chain grows brighter. Lit at ${placeName}.`);
+  return rewardBurst('🛡️', `Deflector shield ${s.beacons} online!`, `Another shield is charged and ready. Set up at ${placeName}.`);
 }
 
 export function countJump() {

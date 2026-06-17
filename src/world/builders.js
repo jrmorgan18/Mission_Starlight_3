@@ -127,6 +127,27 @@ const WORLD_RECIPES = {
   },
   saturnish(ctx, w, h) {               // distant home-system cameo
     bands(ctx, w, h, ['#e8d8a8', '#d8c088', '#f0e0b8', '#ccb078', '#e8d8a8', '#d8c894'], 10);
+  },
+  veyra(ctx, w, h, hctx) {             // Veyra — shining ocean world with coral reefs
+    const g = ctx.createLinearGradient(0, 0, 0, h);
+    g.addColorStop(0, '#2aa0c8'); g.addColorStop(0.5, '#1a7aa0'); g.addColorStop(1, '#0e5878');
+    ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
+    speckle(ctx, w, h, '#3ec8e0', 90, 8, 34, 0.4);     // bright shallows
+    speckle(ctx, w, h, '#ff8a5a', 70, 3, 14, 0.55);    // coral reefs
+    speckle(ctx, w, h, '#ffd0a8', 50, 2, 8, 0.5);      // coral highlights
+    speckle(ctx, w, h, '#eafaff', 80, 1.5, 6, 0.5);    // sea foam
+    hctx.fillStyle = '#808080'; hctx.fillRect(0, 0, w, h);
+    heightSpeckle(hctx, w, h, 90, 4, 22, false);
+  },
+  harbor(ctx, w, h, hctx) {            // Safe Harbor — calm green-blue haven
+    const g = ctx.createLinearGradient(0, 0, w, 0);
+    g.addColorStop(0, '#163a4a'); g.addColorStop(0.5, '#1e5a52'); g.addColorStop(1, '#163a4a');
+    ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
+    speckle(ctx, w, h, '#2e7a6a', 70, 10, 40, 0.5);
+    speckle(ctx, w, h, '#7ae0c0', 50, 3, 12, 0.4);
+    speckle(ctx, w, h, '#bfe8ff', 40, 2, 7, 0.4);
+    hctx.fillStyle = '#808080'; hctx.fillRect(0, 0, w, h);
+    heightSpeckle(hctx, w, h, 70, 5, 24, true);
   }
 };
 
@@ -455,6 +476,29 @@ export function makeAlien(kind) {
     pendulum.position.set(0, 0.35, 0.3);
     g.add(pendulum);
     g.userData.pendulum = pendulum;
+  } else if (kind === 'solari') {       // Veyra ocean-folk: gentle, glowing, finned
+    const body = new THREE.Mesh(
+      new THREE.CapsuleGeometry(0.32, 0.55, 4, 12),
+      new THREE.MeshStandardMaterial({ color: 0x3aa6c8, roughness: 0.35, metalness: 0.1, emissive: 0x1a6a8a, emissiveIntensity: 0.5 })
+    );
+    body.position.y = 0.75;
+    g.add(body);
+    const head = new THREE.Mesh(
+      new THREE.SphereGeometry(0.3, 16, 12),
+      new THREE.MeshStandardMaterial({ color: 0x6fd8ee, roughness: 0.3, metalness: 0.1, emissive: 0x2a8aa8, emissiveIntensity: 0.6 })
+    );
+    head.position.y = 1.4;
+    head.add(eye(-0.11, 0.05, 0.24), eye(0.11, 0.05, 0.24));
+    g.add(head);
+    // a coral-fin crest and a soft bioluminescent glow
+    const fin = new THREE.Mesh(
+      new THREE.ConeGeometry(0.18, 0.5, 5),
+      new THREE.MeshStandardMaterial({ color: 0xffb86a, emissive: 0xff8a5a, emissiveIntensity: 1.2, flatShading: true })
+    );
+    fin.position.y = 1.78;
+    g.add(fin);
+    g.add(makeGlowSprite(0x5ce8ff, 2.0).translateY(1.1));
+    g.userData.bobs = true;
   } else {                              // generic
     const body = new THREE.Mesh(new THREE.CapsuleGeometry(0.3, 0.5, 4, 8), new THREE.MeshStandardMaterial({ color: 0x5cd98f, flatShading: true }));
     body.position.y = 0.7;
@@ -542,12 +586,13 @@ export function makeLighthouse(height = 7) {
 
 /* ---------------- terrain & props ---------------- */
 
-const GROUND_KEYS = { planet9: 'planet9', proxima: 'proxima', trappist: 'trappist', cancri: 'cancri', pulsar: 'station', finale: 'nebula', blackhole: 'station' };
+const GROUND_KEYS = { planet9: 'planet9', proxima: 'proxima', trappist: 'trappist', cancri: 'cancri', pulsar: 'station', finale: 'nebula', blackhole: 'station',
+  veyra: 'veyra', observatory: 'station', spaceport: 'station', harbor: 'harbor', race: 'station' };
 
 export function makeGround(key, size = 60) {
   const geo = new THREE.PlaneGeometry(size, size, 48, 48);
   const pos = geo.attributes.position;
-  const flat = key === 'pulsar' || key === 'blackhole';   // station decks stay flat
+  const flat = key === 'pulsar' || key === 'blackhole' || key === 'observatory' || key === 'spaceport';   // station decks stay flat
   for (let i = 0; i < pos.count; i++) {
     const x = pos.getX(i), y = pos.getY(i);
     const d = Math.sqrt(x * x + y * y);

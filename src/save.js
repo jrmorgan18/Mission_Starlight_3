@@ -9,10 +9,10 @@ export const OOPS_LIMIT_RANGE = [3, 4, 5, 6, 7, 8];
 
 const DEFAULT_PRIZES = [
   { milestone: 'jump3', label: 'Make 3 hyperspace jumps', reward: '15 minutes later bedtime on weekend' },
-  { milestone: 'beacons4', label: 'Light 4 pulsar beacons', reward: 'Extra treat with dinner' },
+  { milestone: 'beacons3', label: 'Bring 3 deflector shields online', reward: 'Extra treat with dinner' },
   { milestone: 'journal10', label: 'Learn 10 Star Journal facts', reward: '15 minutes extra tablet time' },
-  { milestone: 'blackhole', label: 'Reach the supermassive black hole', reward: '30 minutes extra Roblox time' },
-  { milestone: 'finish', label: 'Rescue Nana Lyra and come home', reward: '1 of 5 pieces toward the Grand Prize — see below!' }
+  { milestone: 'pinwheel', label: "Survive the Pinwheel's gamma-ray burst", reward: '30 minutes extra Roblox time' },
+  { milestone: 'finish', label: 'Save the Solari and reach Safe Harbor', reward: '1 of 5 pieces toward the Grand Prize — see below!' }
 ];
 
 function defaultSave() {

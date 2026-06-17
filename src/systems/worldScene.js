@@ -13,7 +13,12 @@ const SKY = {
   cancri:   { bg: 0x180a06, fog: 0x2a1208, lights: { sky: 0xff9a50, ground: 0x2a1208, sunColor: 0xffc080, intensity: 2.8 } },
   pulsar:   { bg: 0x0a1228, fog: 0x0a1228, lights: { sky: 0xaac8ff, ground: 0x101828, intensity: 2.2 } },
   blackhole: { bg: 0x040208, fog: 0x040208, lights: { sky: 0xffa86a, ground: 0x1a0e08, sunColor: 0xffb070, intensity: 2.2 } },
-  finale:   { bg: 0x1c0f33, fog: 0x2a1545, lights: { sky: 0xff9ec8, ground: 0x1c0f33, intensity: 2.2 } }
+  finale:   { bg: 0x1c0f33, fog: 0x2a1545, lights: { sky: 0xff9ec8, ground: 0x1c0f33, intensity: 2.2 } },
+  // --- Mission: Starlight 3 worlds ---
+  veyra:       { bg: 0x07283a, fog: 0x0a3a52, lights: { sky: 0x6fd0ee, ground: 0x0a3a4a, sunColor: 0xbfe8ff, intensity: 2.5 } },
+  observatory: { bg: 0x060a1c, fog: 0x0a1024, lights: { sky: 0x9ab8ff, ground: 0x10182c, intensity: 2.2 } },
+  spaceport:   { bg: 0x12131e, fog: 0x1a1c2a, lights: { sky: 0xbfd0ff, ground: 0x141622, sunColor: 0xdfe8ff, intensity: 2.5 } },
+  harbor:      { bg: 0x0a2630, fog: 0x103a3a, lights: { sky: 0x7ae0c0, ground: 0x0e2e30, sunColor: 0xcffae8, intensity: 2.4 } }
 };
 
 export class WorldScene {
@@ -35,8 +40,8 @@ export class WorldScene {
     stars.position.y = 40;
     this.scene.add(stars);
 
-    if (key === 'finale') {
-      const cloud = makeNebulaCloud(0xe87aa8, 12, 70);
+    if (key === 'finale' || key === 'harbor') {
+      const cloud = makeNebulaCloud(key === 'harbor' ? 0x5ce8c0 : 0xe87aa8, 12, 70);
       cloud.position.set(0, 24, -50);
       this.scene.add(cloud);
     }
